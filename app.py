@@ -45,8 +45,8 @@ def process_video(video_path, csv_filename):
 
             # 프레임에서 포즈 추출
             results = model(frame)
-            keypoints = results[0].keypoints.xyn.numpy()
-            boxes = results[0].boxes.xyxy.numpy()
+            keypoints = results[0].keypoints.xyn.cpu().numpy()
+            boxes = results[0].boxes.xyxy.cpu().numpy()
 
             max_area = 0
             selected_person = None
