@@ -2,7 +2,9 @@ from flask import Flask, jsonify, request, Response, render_template, send_file
 from ultralytics import YOLO
 import numpy as np
 import cv2
+import csv
 import os
+import datetime
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -25,89 +27,88 @@ def calculate_angle(point1, point2, point3):
     
     return np.degrees(angle)
 
-# 스켈레톤 연결 설정
-skeleton_connections = [
-    (5, 6),  # 오른쪽 어깨 - 왼쪽 어깨
-    (5, 7),  # 오른쪽 어깨 - 오른쪽 팔꿈치
-    (6, 8),  # 왼쪽 어깨 - 왼쪽 팔꿈치
-    (7, 9),  # 오른쪽 팔꿈치 - 오른쪽 손목
-    (8, 10), # 왼쪽 팔꿈치 - 왼쪽 손목
-    (5, 11), # 오른쪽 어깨 - 오른쪽 골반
-    (6, 12), # 왼쪽 어깨 - 왼쪽 골반
-    (11, 13),# 오른쪽 골반 - 오른쪽 무릎
-    (12, 14),# 왼쪽 골반 - 왼쪽 무릎
-    (11, 15),# 오른쪽 골반 - 오른쪽 발
-    (12, 16) # 왼쪽 골반 - 왼쪽 발
-]
-
 # 비디오 처리 함수
-def process_video(video_path):
+def process_video(video_path, csv_filename):
     cap = cv2.VideoCapture(video_path)
     frame_number = 1
 
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
+    with open(csv_filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        # Updated CSV header to include keypoints
+        header = ['frame_number', 'keypoints', 'elbow_angle', 'knee_angle']
+        writer.writerow(header)
 
-        # 프레임에서 포즈 추출
-        results = model(frame)
-        keypoints = results[0].keypoints.xyn.numpy()
-        boxes = results[0].boxes.xyxy.numpy()
-
-        max_area = 0
-        selected_person = None
-
-        for person, box in zip(keypoints, boxes):
-            x1, y1, x2, y2 = box
-            area = (x2 - x1) * (y2 - y1)
-
-            if area > max_area:
-                max_area = area
-                selected_person = person
-
-        if selected_person is not None:
-            # 스켈레톤 그리기
-            for start, end in skeleton_connections:
-                start_point = (int(selected_person[start][0] * frame.shape[1]), int(selected_person[start][1] * frame.shape[0]))
-                end_point = (int(selected_person[end][0] * frame.shape[1]), int(selected_person[end][1] * frame.shape[0]))
-                if selected_person[start][0] > 0 and selected_person[start][1] > 0 and selected_person[end][0] > 0 and selected_person[end][1] > 0:
-                    cv2.line(frame, start_point, end_point, (0, 255, 0), 2)  # 선 그리기
-
-            # 프레임 표시
-            cv2.imshow("Skeleton Detection", frame)
-
-            # 'q' 키를 누르면 종료
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
                 break
 
-        frame_number += 1
+            # 프레임에서 포즈 추출
+            results = model(frame)
+            keypoints = results[0].keypoints.xyn.cpu().numpy()
+            boxes = results[0].boxes.xyxy.cpu().numpy()
+
+            max_area = 0
+            selected_person = None
+
+            for person, box in zip(keypoints, boxes):
+                x1, y1, x2, y2 = box
+                area = (x2 - x1) * (y2 - y1)
+
+                if area > max_area:
+                    max_area = area
+                    selected_person = person
+
+            if selected_person is not None and 94 <= frame_number <= 132:
+                # Calculating the angles
+                left_shoulder = selected_person[5][:2]
+                left_elbow = selected_person[7][:2]
+                left_wrist = selected_person[9][:2]
+                elbow_angle = calculate_angle(left_shoulder, left_elbow, left_wrist)
+
+                left_hip = selected_person[11][:2]
+                left_knee = selected_person[13][:2]
+                left_ankle = selected_person[15][:2]
+                knee_angle = calculate_angle(left_hip, left_knee, left_ankle)
+
+                # Saving the keypoints as a list of tuples
+                keypoints_list = [(kp[0], kp[1]) for kp in selected_person]
+
+                # Writing the data into the CSV file
+                writer.writerow([frame_number, keypoints_list, elbow_angle, knee_angle])
+
+            frame_number += 1
 
     cap.release()
-    cv2.destroyAllWindows()
 
 # 비디오 업로드 및 처리 라우트
 @app.route('/upload', methods=['POST'])
 def upload_video():
+    datetime_now_string = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
     if 'video' not in request.files:
         return "No video file", 400
 
     video = request.files['video']
     if video.filename == '':
         return "No selected video", 400
+    else :
+        video.filename = datetime_now_string+'.MOV'
 
     video_path = os.path.join(UPLOAD_FOLDER, video.filename)
     video.save(video_path)
 
-    # 비디오 처리
-    process_video(video_path)
+    csv_filename = 'output/{}.csv'.format(datetime_now_string)
+    process_video(video_path, csv_filename)
 
-    return "Video processed successfully", 200
+    return send_file(csv_filename, as_attachment=True)
 
 # 메인 페이지 라우트
 @app.route('/')
 def index():
-    return render_template('index.html')
+    upload_video_name = os.listdir('./uploads')
+    print(upload_video_name)
+    return render_template('index.html', upload_video_name=upload_video_name)
 
 if __name__=="__main__":
     app.run(debug=True, port=3000, host='0.0.0.0')
