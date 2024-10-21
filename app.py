@@ -50,11 +50,6 @@ def process_video(video_path, csv_filename):
                 break
 
             # 프레임에서 포즈 추출
-<<<<<<< HEAD
-            results = model(frame)
-            keypoints = results[0].keypoints.xyn.cpu().numpy()
-            boxes = results[0].boxes.xyxy.cpu().numpy()
-=======
             results = model.track(source=frame, persist=True)  # persist=True로 ID 유지
             
             for result in results:
@@ -82,7 +77,6 @@ def process_video(video_path, csv_filename):
                             left_elbow = keypoint[0][7][:2]
                             left_wrist = keypoint[0][9][:2]
                             elbow_angle = calculate_angle(left_shoulder, left_elbow, left_wrist)
->>>>>>> f738daa9e6f98b34552fd483aab88bfc737dc2d7
 
                             left_hip = keypoint[0][11][:2]
                             left_knee = keypoint[0][13][:2]
