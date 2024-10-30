@@ -8,7 +8,7 @@ mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
 # 비디오 파일 열기
-cap = cv2.VideoCapture('./test/curry.mp4')
+cap = cv2.VideoCapture('./test/norman_powell.mp4')
 
 # 농구공 궤적을 저장할 리스트
 ball_trajectory = []
@@ -187,7 +187,7 @@ cap.release()
 
 # CSV 파일로 저장
 df = pd.DataFrame(data_list)
-df.to_csv('./basketball_player/curry.csv', index=False)
+df.to_csv('./basketball_player/norman_powell.csv', index=False)
 print("각도 데이터가 'shoot_angles.csv'로 저장되었습니다.")
 
 cv2.destroyAllWindows()
