@@ -6,11 +6,18 @@ import math
 import numpy as np
 from utils import score, detect_down, detect_up, in_hoop_region, clean_hoop_pos, clean_ball_pos
 
-class ShotDetector:
-    def __init__(self):
-        self.model = YOLO("./model/best2.pt")
+class ShotDetector():
+    def __init__(self, player):
+        self.model = YOLO("./models/shot_detector_modle.pt")
         self.class_names = ['Basketball', 'Basketball Hoop']
-        self.cap = cv2.VideoCapture("./videos/Booker_2.mp4")
+        self.cap = cv2.VideoCapture(f"./test/{player}.mp4")
+        
+        self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        self.fps = int(self.cap.get(cv2.CAP_PROP_FPS))
+        self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.output_path = f'./test_output/{player}_ball.mp4'
+        self.out = cv2.VideoWriter(self.output_path, self.fourcc, self.fps, (self.width, self.height))
 
         self.ball_pos = []
         self.hoop_pos = []
@@ -30,15 +37,15 @@ class ShotDetector:
         self.fade_counter = 0
         self.overlay_color = (0, 0, 0)
 
-        self.run()
+        self.run(self.out)
 
-    def run(self):
+    def run(self, out):
         while True:
             ret, self.frame = self.cap.read()
             if not ret:
                 break
 
-            if self.frame_count % 3 == 0:  # 매 3프레임마다 처리
+            if self.frame_count % 1 == 0:  # 매 3프레임마다 처리
                 results = self.model(self.frame, stream=True)
 
                 for r in results:
@@ -67,6 +74,7 @@ class ShotDetector:
             self.frame_count += 1
 
             cv2.imshow('Frame', self.frame)
+            out.write(self.frame)
 
             if cv2.waitKey(30) & 0xFF == ord('q'):  # 30ms 대기
                 break
