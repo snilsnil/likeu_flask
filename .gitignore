@@ -1,3 +1,7 @@
 /uploads
-*.csv
-/test_output
+/user/*.json
+/runs
+/user/user_marge/*.mp4
+/user/user_output/*.mp4
+/user/user_output/*.gif
+/user/user_output/*.png
