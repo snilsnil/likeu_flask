@@ -78,13 +78,13 @@ def upload_video():
     csv_filename = '{}.json'.format(datetime_now_string)
     VideosMarge(video_path, csv_filename, player)
     
-    url=[f'http:localhost:3000/ball/{result_video_path}', 
-        f'http:localhost:3000/player/{result_video_path}',
-        f'http:localhost:3000/ball/{player}', 
-        f'http:localhost:3000/player/{player}',
-        f'http:localhost:3000/similarity/{result_video_path}&{player}']
+    # url=[f'http:localhost:3000/ball/{result_video_path}', 
+    #     f'http:localhost:3000/player/{result_video_path}',
+    #     f'http:localhost:3000/ball/{player}', 
+    #     f'http:localhost:3000/player/{player}',
+    #     f'http:localhost:3000/similarity/{result_video_path}&{player}']
     
-    return url
+    return redirect(url_for('similarity_json', id=result_video_path, player=player))
 
 # 메인 페이지 라우트
 @app.route('/')
