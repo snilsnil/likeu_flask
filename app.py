@@ -51,12 +51,12 @@ def similarity_json(id, player):
     else: return jsonify({"error": "File not found"}),
 
 # 비디오 업로드 및 처리 라우트
-@app.route('/upload', methods=['POST'])
-def upload_video():
+@app.route('/upload/<player>', methods=['POST'])
+def upload_video(player):
     UPLOAD_FOLDER = 'uploads'
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     
-    player=request.form.get('player')
+    # player=request.form.get('player')
     datetime_now_string = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
     if 'video' not in request.files:
