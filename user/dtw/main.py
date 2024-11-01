@@ -32,7 +32,7 @@ class DTW():
             'user': user,
             'mlb': player,
             'distance':self.distance,
-            "similarity_percentage":self.similarity_percentage
+            "similarity_percentage":round(self.similarity_percentage)
         })
         
         df = pd.DataFrame(self.data_list)
