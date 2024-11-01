@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import concurrent.futures
 from user.user_class.ball import ShotDetector
 from user.user_class.shot_form import ShotForm
 from user.dtw.main import DTW
@@ -9,16 +10,28 @@ class VideosMarge():
         self.video_path=video_path
         self.csv_filename=csv_filename
         self.player=player
-        
-        
-        
         self.filename = self.video_path.split(".")[0]
         self.result_player = self.filename.split("/")[1]
-
-        ShotForm(self.video_path, self.csv_filename)
-        ShotDetector(self.video_path, self.csv_filename)
-        DTW(self.result_player, self.player)
+    
+        self.run()
         
+        
+    
+    def  run(self):
+        
+        # Use ThreadPoolExecutor to run ShotForm and ShotDetector concurrently 
+        with concurrent.futures.ProcessPoolExecutor(max_workers=2) as executor: 
+            future_shot_form = executor.submit(self.run_shot_form) 
+            future_shot_detector = executor.submit(self.run_shot_detector) 
+            try: 
+                future_shot_form.result(timeout=30) # 5분 타임아웃
+                future_shot_detector.result(timeout=30) 
+            except concurrent.futures.TimeoutError: 
+                print("One of the tasks took too long and timed out")
+            except Exception as e: 
+                print(f"Error occurred: {e}")
+        
+        DTW(self.result_player, self.player)
 
 
         # 첫 번째 비디오 파일 열기
@@ -56,5 +69,15 @@ class VideosMarge():
         self.out.release()
         cv2.destroyAllWindows()
         
+        
+    def run_shot_form(self): 
+        shot_form = ShotForm(self.video_path, self.csv_filename) 
+        # 필요한 작업 수행
+        shot_form.run()
+
+    def run_shot_detector(self):
+        shot_detector = ShotDetector(self.video_path, self.csv_filename)
+        # 필요한 작업 수행
+        shot_detector.run()
 if __name__=='__main__':
     VideosMarge()
