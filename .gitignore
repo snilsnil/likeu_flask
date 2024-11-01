@@ -5,3 +5,8 @@
 /user/user_output/*.mp4
 /user/user_output/*.gif
 /user/user_output/*.png
+
+# not record user data
+/user/user_player/*.json
+/user/user_ball/*.json
+/user/dtw/result/*.json
