@@ -46,7 +46,7 @@ class DTW():
 
         self.data_list.append({
             'user': user,
-            'mlb': player,
+            'nba': player,
             'distance_total': self.total_distance,
             'similarity_percentage_total': round(self.similarity_percentage_total)
         })
