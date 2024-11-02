@@ -7,13 +7,14 @@
   </head>
   <body>
     <h1>Upload a Video for Pose Detection</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
+    <form id="uploadForm" method="post" enctype="multipart/form-data">
       <input type="file" name="video" accept="video/*" required />
       <input type="submit" value="Upload Video" />
       <br />
-      <label for="player">player</label>
-      <select name="player">
+      <label for="player">Player</label>
+      <select name="player" id="player">
         <option value="Booker">Booker</option>
+        <!-- 추가 옵션들 -->
       </select>
     </form>
     <ul>
@@ -22,4 +23,15 @@
       {% endfor %}
     </ul>
   </body>
+  <script>
+    document
+      .getElementById("uploadForm")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+        const playerId = document.getElementById("player").value;
+        const formAction = `/upload/${playerId}`;
+        this.action = formAction;
+        this.submit();
+      });
+  </script>
 </html>

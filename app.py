@@ -38,25 +38,14 @@ def respose_player_json(id):
             data = json.load(f) 
             return jsonify(data) 
     else: return jsonify({"error": "File not found"}),
-    
-@app.route('/similarity/<id>&<player>', methods=['GET'])
-def similarity_json(id, player):
-    # 여기서 id와 player를 사용하여 원하는 작업을 수행합니다
-    
-    data=f'user/dtw/result/{id}_{player}.json'
-    if os.path.exists(data): 
-        with open(data, 'r') as f: 
-            data = json.load(f) 
-            return jsonify(data) 
-    else: return jsonify({"error": "File not found"}),
 
 # 비디오 업로드 및 처리 라우트
-@app.route('/upload', methods=['POST'])
-def upload_video():
+@app.route('/upload/<player>', methods=['POST'])
+def upload_video(player):
     UPLOAD_FOLDER = 'uploads'
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     
-    player=request.form.get('player')
+    # player=request.form.get('player')
     datetime_now_string = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
     if 'video' not in request.files:
@@ -84,7 +73,17 @@ def upload_video():
     #     f'http:localhost:3000/player/{player}',
     #     f'http:localhost:3000/similarity/{result_video_path}&{player}']
     
-    return redirect(url_for('similarity_json', id=result_video_path, player=player))
+    data = f'user/dtw/result/{result_video_path}_{player}.json'
+    if os.path.exists(data):
+        with open(data, 'r') as f:
+            data = json.load(f)
+            return jsonify(data)
+    else:
+        return jsonify({"error": "File not found"}), 404
+    
+    # return redirect(url_for('similarity_json', id=result_video_path, player=player))
+
+
 
 # 메인 페이지 라우트
 @app.route('/')

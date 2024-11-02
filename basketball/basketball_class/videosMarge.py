@@ -1,12 +1,30 @@
 import cv2
-import numpy as np
+import concurrent.futures
 from ball import ShotDetector
 from shot_form import ShotForm
 
 player="Booker"
 
-ShotForm(player, 2)
-ShotDetector(player)
+def run_shot_form(player, id): 
+    shot_form = ShotForm(player, id) 
+    # 필요한 작업 수행
+    shot_form.run()
+
+def run_shot_detector(player): 
+    shot_detector = ShotDetector(player)
+    # 필요한 작업 수행
+    shot_detector.run()
+
+with concurrent.futures.ProcessPoolExecutor(max_workers=2) as executor: 
+    future_shot_form = executor.submit(run_shot_form, player, 2) 
+    future_shot_detector = executor.submit(run_shot_detector, player) 
+    try: 
+        future_shot_form.result(timeout=30)  
+        future_shot_detector.result(timeout=30) 
+    except concurrent.futures.TimeoutError: 
+        print("One of the tasks took too long and timed out")
+    except Exception as e: 
+        print(f"Error occurred: {e}")
 
 # 첫 번째 비디오 파일 열기
 cap1 = cv2.VideoCapture(f'basketball/basketball_output/{player}_ball.mp4')

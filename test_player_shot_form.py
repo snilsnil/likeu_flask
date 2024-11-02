@@ -5,13 +5,10 @@ import pandas as pd
 
 class ShotForm():
     def __init__(self, player, id):
-        
-        self.player=player
-        self.id=id
         # YOLOv8 Pose 모델 로드
         self.model = YOLO('yolo11n-pose.pt')
 
-        self.cap = cv2.VideoCapture(f"test/{self.player}.mp4")
+        self.cap = cv2.VideoCapture(f"test/{player}.mp4")
 
 
         # 비디오 저장 설정 (프레임 크기 및 FPS 가져오기)
@@ -19,7 +16,7 @@ class ShotForm():
         self.fps = int(self.cap.get(cv2.CAP_PROP_FPS))
         self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        self.output_path = f'basketball/basketball_output/{self.player}.mp4'
+        self.output_path = f'basketball/basketball_output/{player}.mp4'
         self.out = cv2.VideoWriter(self.output_path, self.fourcc, self.fps, (self.width, self.height))
 
         self.data_list = []
@@ -34,7 +31,7 @@ class ShotForm():
         self.height_tolerance = 0.05
             
         # 스켈레톤 연결 설정 (관절 인덱스 연결)
-        self.skeleton_connections = [
+        skeleton_connections = [
             (5, 7), (7, 9),  # 왼쪽 어깨 - 왼쪽 팔꿈치 - 왼쪽 손목
             (6, 8), (8, 10),  # 오른쪽 어깨 - 오른쪽 팔꿈치 - 오른쪽 손목
             (5, 6),           # 왼쪽 어깨 - 오른쪽 어깨
@@ -43,26 +40,22 @@ class ShotForm():
             (11, 12),           # 왼쪽 골반 - 오른쪽 골반
             (5, 11), (6, 12)
         ]
-        
-        self.run()
-        
-        
-    def run(self):
-        self.findStartFrameAndEndFrame(self.id)    # 슛 시작점과 끝지점 찾기
+            
+        self.findStartFrameAndEndFrame(id)    # 슛 시작점과 끝지점 찾기
         self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)                # cv2로 열은 영상 프레임 초기화
-        self.recordToCSV(self.id)                  # csv로 기록
+        self.recordToCSV(skeleton_connections, id)                  # csv로 기록
         
         self.cap.release()
         self.out.release()
         cv2.destroyAllWindows()
         
         df = pd.DataFrame(self.data_list)
-        df.to_json(f'basketball/basketball_player/{self.player}.json', orient='records', indent=4)
-        print(f"각도 데이터가 '{self.player}.json'로 저장되었습니다.")
-    
-    
-    
-    
+        df.to_json(f'basketball/basketball_player/{player}.json', orient='records', indent=4)
+        print(f"각도 데이터가 '{player}.json'로 저장되었습니다.")
+        
+        
+        
+        
     def startFrame(self, keypoint):
         
         left_elbow_y = keypoint[0][7][1]     # 왼쪽 팔꿈치의 y 좌표
@@ -178,7 +171,7 @@ class ShotForm():
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
                 
-    def recordToCSV(self, id):
+    def recordToCSV(self, skeleton_connections, id):
         results=self.model.predictor.trackers[0].reset()
         
         while self.cap.isOpened():
@@ -200,7 +193,7 @@ class ShotForm():
                         keypoint = keypoints[i].xyn.cpu().numpy()
                         
                         # 스켈레톤 그리기 (신뢰도가 높은 경우에만 그리기)
-                        for start, end in self.skeleton_connections:
+                        for start, end in skeleton_connections:
                             if keypoint[0][start][0] > 0 and keypoint[0][end][0] > 0:
                                 start_point = (int(keypoint[0][start][0] * frame.shape[1]),
                                                 int(keypoint[0][start][1] * frame.shape[0]))
@@ -229,4 +222,5 @@ class ShotForm():
                 if cv2.waitKey(100) & 0xFF == ord('q'):
                     break
 if __name__ == "__main__":
-    ShotForm()
+    player = 'Booker'
+    ShotForm(player, 2)

@@ -13,12 +13,12 @@ class DTW():
         self.data_list=[]
 
         # 필요한 열만 선택
-        self.df_mlb_filtered = self.df_mlb[self.df_mlb['Shooting'] == True][['Left Elbow Angle', 'Right Elbow Angle', 'Left Knee Angle', 'Right Knee Angle']]
-        self.df_usr_filtered = self.df_usr.iloc[6:22][['Left Elbow Angle', 'Left Knee Angle']]
+        self.df_mlb_filtered = self.df_mlb[self.df_mlb['Shooting'] == True][['Elbow Angle','Knee Angle']]
+        self.df_usr_filtered = self.df_usr.iloc[6:22][['Elbow Angle','Knee Angle']]
 
         # 엘보 각도만 추출하여 배열로 변환
-        self.line1 = self.df_usr_filtered[['Left Elbow Angle']].to_numpy()
-        self.line2 = self.df_mlb_filtered[['Left Elbow Angle']].to_numpy()
+        self.line1 = self.df_usr_filtered[['Elbow Angle']].to_numpy()
+        self.line2 = self.df_mlb_filtered[['Elbow Angle']].to_numpy()
 
         # DTW 거리 계산
         self.distance = dtw.distance(self.line1, self.line2)
@@ -32,7 +32,7 @@ class DTW():
             'user': user,
             'mlb': player,
             'distance':self.distance,
-            "similarity_percentage":self.similarity_percentage
+            "similarity_percentage":round(self.similarity_percentage)
         })
         
         df = pd.DataFrame(self.data_list)

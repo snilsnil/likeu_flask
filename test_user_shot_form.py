@@ -4,22 +4,23 @@ from ultralytics import YOLO
 import pandas as pd
 
 class ShotForm():
-    def __init__(self, player, id):
-        
-        self.player=player
-        self.id=id
+    def __init__(self, player, csv_filename):
         # YOLOv8 Pose 모델 로드
         self.model = YOLO('yolo11n-pose.pt')
 
-        self.cap = cv2.VideoCapture(f"test/{self.player}.mp4")
+        self.player=player
+        
+        self.cap = cv2.VideoCapture(f"{self.player}")
 
+        self.filename = self.player.split(".")[0]
+        self.result_player = self.filename.split("/")[1]
 
         # 비디오 저장 설정 (프레임 크기 및 FPS 가져오기)
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         self.fps = int(self.cap.get(cv2.CAP_PROP_FPS))
         self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        self.output_path = f'basketball/basketball_output/{self.player}.mp4'
+        self.output_path = f'user/user_output/{self.result_player}.mp4'
         self.out = cv2.VideoWriter(self.output_path, self.fourcc, self.fps, (self.width, self.height))
 
         self.data_list = []
@@ -29,12 +30,12 @@ class ShotForm():
         self.end_frame = 0
         self.high_wrist_y = 10000
         self.previous_wrist_y=9999
-        
+
         # 허용 오차 설정
-        self.height_tolerance = 0.05
+        self.height_tolerance = 0.005
             
         # 스켈레톤 연결 설정 (관절 인덱스 연결)
-        self.skeleton_connections = [
+        skeleton_connections = [
             (5, 7), (7, 9),  # 왼쪽 어깨 - 왼쪽 팔꿈치 - 왼쪽 손목
             (6, 8), (8, 10),  # 오른쪽 어깨 - 오른쪽 팔꿈치 - 오른쪽 손목
             (5, 6),           # 왼쪽 어깨 - 오른쪽 어깨
@@ -43,26 +44,24 @@ class ShotForm():
             (11, 12),           # 왼쪽 골반 - 오른쪽 골반
             (5, 11), (6, 12)
         ]
+            
+        self.findStartFrameAndEndFrame()    # 슛 시작점과 끝지점 찾기
         
-        self.run()
-        
-        
-    def run(self):
-        self.findStartFrameAndEndFrame(self.id)    # 슛 시작점과 끝지점 찾기
         self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)                # cv2로 열은 영상 프레임 초기화
-        self.recordToCSV(self.id)                  # csv로 기록
+        
+        self.recordToCSV(skeleton_connections)                  # csv로 기록
         
         self.cap.release()
         self.out.release()
         cv2.destroyAllWindows()
         
         df = pd.DataFrame(self.data_list)
-        df.to_json(f'basketball/basketball_player/{self.player}.json', orient='records', indent=4)
-        print(f"각도 데이터가 '{self.player}.json'로 저장되었습니다.")
-    
-    
-    
-    
+        df.to_json(f'user/user_player/{csv_filename}', orient='records', indent=4)
+        print(f"각도 데이터가 '{csv_filename}'로 저장되었습니다.")
+        
+        
+        
+        
     def startFrame(self, keypoint):
         
         left_elbow_y = keypoint[0][7][1]     # 왼쪽 팔꿈치의 y 좌표
@@ -74,10 +73,10 @@ class ShotForm():
         
         # 팔꿈치가 어깨 높이와 동일할 때 start_frame 설정
         if self.start_frame == 0:
-            if left_ankle_x > right_ankle_x and 0.03 <abs(left_elbow_y - left_wrist_y) <= self.height_tolerance:
+            if left_ankle_x > right_ankle_x and 0<abs(left_elbow_y - left_wrist_y) <= self.height_tolerance:
                 self.start_frame = self.frame_number
             
-            elif left_ankle_x < right_ankle_x and 0.03 <abs(right_elbow_y - right_wrist_y) <= self.height_tolerance:
+            elif left_ankle_x < right_ankle_x and 0<abs(right_elbow_y - right_wrist_y) <= self.height_tolerance:
                 self.start_frame = self.frame_number
     
     def endFrame(self, keypoint):
@@ -150,7 +149,7 @@ class ShotForm():
                 'Shooting': False,
             })
     
-    def findStartFrameAndEndFrame(self, id):
+    def findStartFrameAndEndFrame(self):
         while self.cap.isOpened():
             ret, frame = self.cap.read()
             if not ret:
@@ -164,29 +163,32 @@ class ShotForm():
                 keypoints = result.keypoints
                 for i, box in enumerate(boxes):
                     track_id = int(box.id) if box.id is not None else -1
-                    
                     # track_id가 1인 객체만 처리
-                    if track_id == id:
+                    if track_id == 1:
                         keypoint = keypoints[i].xyn.cpu().numpy()
-                            
+                        
                         self.frame_number=self.cap.get(cv2.CAP_PROP_POS_FRAMES)
                         
                         self.startFrame(keypoint)
                         
                         self.endFrame(keypoint)
+                        
                 # 'q' 키를 누르면 종료
+                
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
                 
-    def recordToCSV(self, id):
+    def recordToCSV(self, skeleton_connections):
         results=self.model.predictor.trackers[0].reset()
         
         while self.cap.isOpened():
+            
             ret, frame = self.cap.read()
             if not ret:
                 break
-                
+            
             # 프레임에서 포즈 추출
+            
             results = self.model.track(source=frame, persist=True)
             
             for result in results:
@@ -194,13 +196,13 @@ class ShotForm():
                 keypoints = result.keypoints
                 for i, box in enumerate(boxes):
                     track_id = int(box.id) if box.id is not None else -1
-                    
                     # track_id가 1인 객체만 처리
-                    if track_id == id:
+                    
+                    if track_id == 1:
                         keypoint = keypoints[i].xyn.cpu().numpy()
                         
                         # 스켈레톤 그리기 (신뢰도가 높은 경우에만 그리기)
-                        for start, end in self.skeleton_connections:
+                        for start, end in skeleton_connections:
                             if keypoint[0][start][0] > 0 and keypoint[0][end][0] > 0:
                                 start_point = (int(keypoint[0][start][0] * frame.shape[1]),
                                                 int(keypoint[0][start][1] * frame.shape[0]))
@@ -213,7 +215,7 @@ class ShotForm():
                         left_elbow_angle=self.leftElbowAngle(keypoint)
                         right_elbow_angle=self.rightElbowAngle(keypoint)
                         left_knee_angle=self.leftKneeAngle(keypoint)
-                        right_knee_angle=self.rightKneeAngle(keypoint)
+                        right_knee_angle=self.rightKneeAngle(keypoint)          
                         
                         left_ankle_x = keypoint[0][15][0]   # 왼쪽 발목 x 좌표
                         right_ankle_x = keypoint[0][16][0]  # 오른쪽 발목
@@ -226,7 +228,9 @@ class ShotForm():
                         # 결과 프레임 저장
                         self.out.write(frame)
                 # 'q' 키를 누르면 종료
-                if cv2.waitKey(100) & 0xFF == ord('q'):
+                if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
 if __name__ == "__main__":
-    ShotForm()
+    player = 'uploads/20241101192135.MOV'
+    csv = '20241101192135.json'
+    ShotForm(player, csv)

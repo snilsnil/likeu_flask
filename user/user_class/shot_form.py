@@ -9,6 +9,7 @@ class ShotForm():
         self.model = YOLO('yolo11n-pose.pt')
 
         self.player=player
+        self.csv_filename=csv_filename
         
         self.cap = cv2.VideoCapture(f"{self.player}")
 
@@ -29,12 +30,13 @@ class ShotForm():
         self.start_frame = 0
         self.end_frame = 0
         self.high_wrist_y = 10000
+        self.previous_wrist_y=9999
 
         # 허용 오차 설정
         self.height_tolerance = 0.005
             
         # 스켈레톤 연결 설정 (관절 인덱스 연결)
-        skeleton_connections = [
+        self.skeleton_connections = [
             (5, 7), (7, 9),  # 왼쪽 어깨 - 왼쪽 팔꿈치 - 왼쪽 손목
             (6, 8), (8, 10),  # 오른쪽 어깨 - 오른쪽 팔꿈치 - 오른쪽 손목
             (5, 6),           # 왼쪽 어깨 - 오른쪽 어깨
@@ -43,20 +45,23 @@ class ShotForm():
             (11, 12),           # 왼쪽 골반 - 오른쪽 골반
             (5, 11), (6, 12)
         ]
-            
-        self.findStartFrameAndEndFrame(skeleton_connections)    # 슛 시작점과 끝지점 찾기
+        
+        self.run()
+        
+    def run(self):
+        self.findStartFrameAndEndFrame()    # 슛 시작점과 끝지점 찾기
         
         self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)                # cv2로 열은 영상 프레임 초기화
         
-        self.recordToCSV(skeleton_connections)                  # csv로 기록
+        self.recordToCSV()                  # csv로 기록
         
         self.cap.release()
         self.out.release()
         cv2.destroyAllWindows()
         
         df = pd.DataFrame(self.data_list)
-        df.to_json(f'user/user_player/{csv_filename}', orient='records', indent=4)
-        print(f"각도 데이터가 '{csv_filename}'로 저장되었습니다.")
+        df.to_json(f'user/user_player/{self.csv_filename}', orient='records', indent=4)
+        print(f"각도 데이터가 '{self.csv_filename}'로 저장되었습니다.")
         
         
         
@@ -67,21 +72,34 @@ class ShotForm():
         right_elbow_y = keypoint[0][8][1]     # 오른쪽 팔꿈치의 y 좌표
         right_wrist_y = keypoint[0][10][1]  # 오른쪽 손목의 y 좌표
         left_wrist_y = keypoint[0][9][1]   # 왼쪽 손목의 y 좌표
+        left_ankle_x = keypoint[0][15][0]   # 왼쪽 발목 x 좌표
+        right_ankle_x = keypoint[0][16][0]  # 오른쪽 발목
         
         # 팔꿈치가 어깨 높이와 동일할 때 start_frame 설정
-        if  (0<abs(left_elbow_y - left_wrist_y) <= self.height_tolerance or
-            0<abs(right_elbow_y - right_wrist_y) <= self.height_tolerance) and self.start_frame == 0:
-            self.start_frame = self.frame_number
+        if self.start_frame == 0:
+            if left_ankle_x > right_ankle_x and 0<abs(left_elbow_y - left_wrist_y) <= self.height_tolerance:
+                self.start_frame = self.frame_number
+            
+            elif left_ankle_x < right_ankle_x and 0<abs(right_elbow_y - right_wrist_y) <= self.height_tolerance:
+                self.start_frame = self.frame_number
     
     def endFrame(self, keypoint):
         
         right_wrist_y = keypoint[0][10][1]  # 오른쪽 손목의 y 좌표
         left_wrist_y = keypoint[0][9][1]   # 왼쪽 손목의 y 좌표
+        left_ankle_x = keypoint[0][15][0]   # 왼쪽 발목 x 좌표
+        right_ankle_x = keypoint[0][16][0]  # 오른쪽 발목
         
         if self.start_frame != 0 :
-            if  self.high_wrist_y > min(right_wrist_y, left_wrist_y)>0:
-                self.high_wrist_y = min(right_wrist_y, left_wrist_y)
-                self.end_frame= self.frame_number
+            if left_ankle_x > right_ankle_x and self.high_wrist_y > min(self.previous_wrist_y, left_wrist_y)>0:
+                self.high_wrist_y = min(self.previous_wrist_y, left_wrist_y)
+                self.previous_wrist_y=left_wrist_y
+                self.end_frame = self.frame_number
+            
+            elif left_ankle_x < right_ankle_x and self.high_wrist_y > min(self.previous_wrist_y, right_wrist_y)>0:
+                self.high_wrist_y = min(self.previous_wrist_y, right_wrist_y)
+                self.previous_wrist_y=right_wrist_y
+                self.end_frame = self.frame_number
     
     def leftElbowAngle(self,keypoint):
         left_shoulder = keypoint[0][5]
@@ -118,7 +136,24 @@ class ShotForm():
             angle = 360 - angle
         return angle
     
-    def findStartFrameAndEndFrame(self, skeleton_connections):
+    def recordShooting(self, frame, elbow, knee):
+        if self.start_frame <= self.frame_number <= self.end_frame:
+            cv2.imshow("frame", frame)
+            self.data_list.append({
+                'Frame': self.frame_number,
+                'Elbow Angle': elbow,
+                'Knee Angle': knee,
+                'Shooting': True,
+            })
+        else:
+            self.data_list.append({
+                'Frame': self.frame_number,
+                'Elbow Angle': elbow,
+                'Knee Angle': knee,
+                'Shooting': False,
+            })
+    
+    def findStartFrameAndEndFrame(self):
         while self.cap.isOpened():
             ret, frame = self.cap.read()
             if not ret:
@@ -135,19 +170,19 @@ class ShotForm():
                     # track_id가 1인 객체만 처리
                     if track_id == 1:
                         keypoint = keypoints[i].xyn.cpu().numpy()
-                        # 스켈레톤 그리기 (신뢰도가 높은 경우에만 그리기)
-                            
+                        
                         self.frame_number=self.cap.get(cv2.CAP_PROP_POS_FRAMES)
                         
                         self.startFrame(keypoint)
                         
                         self.endFrame(keypoint)
+                        
                 # 'q' 키를 누르면 종료
                 
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
                 
-    def recordToCSV(self, skeleton_connections):
+    def recordToCSV(self):
         results=self.model.predictor.trackers[0].reset()
         
         while self.cap.isOpened():
@@ -171,7 +206,7 @@ class ShotForm():
                         keypoint = keypoints[i].xyn.cpu().numpy()
                         
                         # 스켈레톤 그리기 (신뢰도가 높은 경우에만 그리기)
-                        for start, end in skeleton_connections:
+                        for start, end in self.skeleton_connections:
                             if keypoint[0][start][0] > 0 and keypoint[0][end][0] > 0:
                                 start_point = (int(keypoint[0][start][0] * frame.shape[1]),
                                                 int(keypoint[0][start][1] * frame.shape[0]))
@@ -184,28 +219,15 @@ class ShotForm():
                         left_elbow_angle=self.leftElbowAngle(keypoint)
                         right_elbow_angle=self.rightElbowAngle(keypoint)
                         left_knee_angle=self.leftKneeAngle(keypoint)
-                        right_knee_angle=self.rightKneeAngle(keypoint)
+                        right_knee_angle=self.rightKneeAngle(keypoint)          
                         
-                        
-                        if self.start_frame <= self.frame_number <= self.end_frame:
-                            self.data_list.append({
-                                'Frame': self.frame_number,
-                                'Left Elbow Angle': left_elbow_angle,
-                                'Right Elbow Angle': right_elbow_angle,
-                                'Left Knee Angle': left_knee_angle,
-                                'Right Knee Angle': right_knee_angle,
-                                'Shooting': True,
-                            })
-                            
+                        left_ankle_x = keypoint[0][15][0]   # 왼쪽 발목 x 좌표
+                        right_ankle_x = keypoint[0][16][0]  # 오른쪽 발목
+
+                        if left_ankle_x > right_ankle_x:
+                            self.recordShooting(frame, left_elbow_angle, left_knee_angle)
                         else:
-                            self.data_list.append({
-                                'Frame': self.frame_number,
-                                'Left Elbow Angle': left_elbow_angle,
-                                'Right Elbow Angle': right_elbow_angle,
-                                'Left Knee Angle': left_knee_angle,
-                                'Right Knee Angle': right_knee_angle,
-                                'Shooting': False,
-                            })
+                            self.recordShooting(frame, right_elbow_angle, right_knee_angle)
                         
                         # 결과 프레임 저장
                         self.out.write(frame)
