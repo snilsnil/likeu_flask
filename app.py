@@ -67,21 +67,20 @@ def upload_video(player):
     csv_filename = '{}.json'.format(datetime_now_string)
     VideosMarge(video_path, csv_filename, player)
     
-    # url=[f'http:localhost:3000/ball/{result_video_path}', 
-    #     f'http:localhost:3000/player/{result_video_path}',
-    #     f'http:localhost:3000/ball/{player}', 
-    #     f'http:localhost:3000/player/{player}',
-    #     f'http:localhost:3000/similarity/{result_video_path}&{player}']
+    data = f'user/dtw/result/{result_video_path}_{player}.json' 
+    diff_data = f'user/dtw/diff/{result_video_path}_{player}_diff.json' 
+    result = {} 
+    if os.path.exists(data): 
+        with open(data, 'r') as f: 
+            result['data'] = json.load(f) 
+    else: result['data'] = {"error": "File not found"} 
     
-    data = f'user/dtw/result/{result_video_path}_{player}.json'
-    if os.path.exists(data):
-        with open(data, 'r') as f:
-            data = json.load(f)
-            return jsonify(data)
-    else:
-        return jsonify({"error": "File not found"}), 404
+    if os.path.exists(diff_data): 
+        with open(diff_data, 'r') as f: 
+            result['diff_data'] = json.load(f) 
+    else: result['diff_data'] = {"error": "File not found"} 
     
-    # return redirect(url_for('similarity_json', id=result_video_path, player=player))
+    return jsonify(result)
 
 
 
