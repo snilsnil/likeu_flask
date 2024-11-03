@@ -10,3 +10,4 @@
 /user/user_player/*.json
 /user/user_ball/*.json
 /user/dtw/result/*.json
+/user/dtw/diff/*.json
