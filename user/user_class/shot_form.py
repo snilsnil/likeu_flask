@@ -33,7 +33,7 @@ class ShotForm():
         self.previous_wrist_y=9999
 
         # 허용 오차 설정
-        self.height_tolerance = 0.005
+        self.height_tolerance = 0.05
             
         # 스켈레톤 연결 설정 (관절 인덱스 연결)
         self.skeleton_connections = [
