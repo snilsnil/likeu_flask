@@ -45,10 +45,7 @@ class DTW():
         self.knee_diff = [int((a - b)) for a, b in zip(self.line1_knee, self.line2_knee)]
 
         self.data_list.append({
-            'user': user,
-            'nba': player,
-            'distance_total': self.total_distance,
-            'similarity_percentage_total': round(self.similarity_percentage_total)
+            'similarity_percentage_total': round(self.similarity_percentage_total-13)
         })
 
         self.diff_list.append({

@@ -1,3 +1,4 @@
+import threading
 import cv2
 import numpy as np
 import concurrent.futures
@@ -30,6 +31,13 @@ class VideosMarge():
                 print("One of the tasks took too long and timed out")
             except Exception as e: 
                 print(f"Error occurred: {e}")
+        
+        # shot_form_thread = threading.Thread(target=self.run_shot_form) 
+        # shot_detector_thread = threading.Thread(target=self.run_shot_detector) 
+        # shot_form_thread.start() 
+        # shot_detector_thread.start() 
+        # shot_form_thread.join(timeout=30) 
+        # shot_detector_thread.join(timeout=30)
         
         DTW(self.result_player, self.player)
 

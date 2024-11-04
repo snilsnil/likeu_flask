@@ -69,16 +69,34 @@ def upload_video(player):
     
     data = f'user/dtw/result/{result_video_path}_{player}.json' 
     diff_data = f'user/dtw/diff/{result_video_path}_{player}_diff.json' 
-    result = {} 
-    if os.path.exists(data): 
-        with open(data, 'r') as f: 
-            result['data'] = json.load(f) 
-    else: result['data'] = {"error": "File not found"} 
+    result = {}
+    diff_list=[]
+    elbow_diff=None
+    knee_diff=None 
+    if os.path.exists(data) and os.path.exists(diff_data):
+        with open(data, 'r') as f:
+            result_data = json.load(f)
+            similarity_percentage_total = result_data[0]['similarity_percentage_total']
+
+        with open(diff_data, 'r') as d:
+            diff_list = json.load(d)
+            elbow_diff = diff_list[0]['elbow_diff'][-1]
+            knee_diff = diff_list[0]['knee_diff'][-1]
+
+        result['data'] = {
+            'similarity_percentage_total': similarity_percentage_total,
+            'nba_player': player,
+            'elbow_diff': elbow_diff,
+            'knee_diff': knee_diff
+        }
+    else:
+        result['data'] = {"error": "File not found"}
+
     
-    if os.path.exists(diff_data): 
-        with open(diff_data, 'r') as f: 
-            result['diff_data'] = json.load(f) 
-    else: result['diff_data'] = {"error": "File not found"} 
+    # if os.path.exists(diff_data): 
+    #     with open(diff_data, 'r') as f: 
+    #         result['diff_data'] = json.load(f)
+    # else: result['diff_data'] = {"error": "File not found"} 
     
     return jsonify(result)
 

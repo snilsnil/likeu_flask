@@ -138,7 +138,6 @@ class ShotForm():
     
     def recordShooting(self, frame, elbow, knee):
         if self.start_frame <= self.frame_number <= self.end_frame:
-            cv2.imshow("frame", frame)
             self.data_list.append({
                 'Frame': self.frame_number,
                 'Elbow Angle': elbow,
