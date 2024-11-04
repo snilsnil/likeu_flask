@@ -215,10 +215,10 @@ class ShotForm():
                             
                         self.frame_number=self.cap.get(cv2.CAP_PROP_POS_FRAMES)
                             
-                        left_elbow_angle=self.leftElbowAngle(keypoint)
-                        right_elbow_angle=self.rightElbowAngle(keypoint)
-                        left_knee_angle=self.leftKneeAngle(keypoint)
-                        right_knee_angle=self.rightKneeAngle(keypoint)          
+                        left_elbow_angle=(self.leftElbowAngle(keypoint))/180
+                        right_elbow_angle=(self.rightElbowAngle(keypoint))/180
+                        left_knee_angle=(self.leftKneeAngle(keypoint))/180
+                        right_knee_angle=(self.rightKneeAngle(keypoint))/180          
                         
                         left_ankle_x = keypoint[0][15][0]   # 왼쪽 발목 x 좌표
                         right_ankle_x = keypoint[0][16][0]  # 오른쪽 발목

@@ -41,8 +41,8 @@ class DTW():
         print(f"총합 유사도: {self.similarity_percentage_total:.2f}%")
 
         # 팔꿈치와 무릎 각도의 차이 계산
-        self.elbow_diff = [int((a - b)) for a, b in zip(self.line1_elbow, self.line2_elbow)]
-        self.knee_diff = [int((a - b)) for a, b in zip(self.line1_knee, self.line2_knee)]
+        self.elbow_diff = [int((a*180 - b*180)) for a, b in zip(self.line1_elbow, self.line2_elbow)]
+        self.knee_diff = [int((a*180 - b*180)) for a, b in zip(self.line1_knee, self.line2_knee)]
 
         self.data_list.append({
             'similarity_percentage_total': round(self.similarity_percentage_total-13)
