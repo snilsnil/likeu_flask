@@ -1,11 +1,10 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-from dtaidistance import dtw
 import numpy as np
+from dtaidistance import dtw
 
 class DTW():
     def __init__(self, user, player):
-        # JSON 파일에서 데이터를 읽어옵니다
+        # JSON 파일에서 정규화된 데이터를 읽어옵니다
         self.df_mlb = pd.read_json(f'basketball/basketball_player/{player}.json')
         self.df_usr = pd.read_json(f'user/user_player/{user}.json')
 
@@ -17,10 +16,10 @@ class DTW():
         self.df_usr_filtered = self.df_usr[self.df_usr['Shooting'] == True][['Elbow Angle', 'Knee Angle']]
 
         # 엘보 각도와 무릎 각도를 각각 배열로 변환
-        self.line1_elbow = self.df_usr_filtered[['Elbow Angle']].to_numpy().flatten()
-        self.line2_elbow = self.df_mlb_filtered[['Elbow Angle']].to_numpy().flatten()
-        self.line1_knee = self.df_usr_filtered[['Knee Angle']].to_numpy().flatten()
-        self.line2_knee = self.df_mlb_filtered[['Knee Angle']].to_numpy().flatten()
+        self.line1_elbow = self.df_usr_filtered['Elbow Angle'].to_numpy().flatten()
+        self.line2_elbow = self.df_mlb_filtered['Elbow Angle'].to_numpy().flatten()
+        self.line1_knee = self.df_usr_filtered['Knee Angle'].to_numpy().flatten()
+        self.line2_knee = self.df_mlb_filtered['Knee Angle'].to_numpy().flatten()
 
         # 엘보 각도 DTW 거리 계산
         self.distance_elbow = dtw.distance(self.line1_elbow, self.line2_elbow)
@@ -30,9 +29,13 @@ class DTW():
 
         # 총합 DTW 거리 계산
         self.total_distance = self.distance_elbow + self.distance_knee
-        self.max_distance_elbow = len(self.line1_elbow) * np.max([np.max(self.line1_elbow), np.max(self.line2_elbow)])
-        self.max_distance_knee = len(self.line1_knee) * np.max([np.max(self.line1_knee), np.max(self.line2_knee)])
+        
+        # 최대 거리 계산: 각도 차이의 최대값을 고려하여 계산
+        self.max_distance_elbow = len(self.line1_elbow) * np.max([np.abs(np.max(self.line1_elbow) - np.min(self.line2_elbow)), np.abs(np.min(self.line1_elbow) - np.max(self.line2_elbow))])
+        self.max_distance_knee = len(self.line1_knee) * np.max([np.abs(np.max(self.line1_knee) - np.min(self.line2_knee)), np.abs(np.min(self.line1_knee) - np.max(self.line2_knee))])
         self.max_distance_total = self.max_distance_elbow + self.max_distance_knee
+        
+        # 유사도 계산
         self.similarity_percentage_total = (1 - self.total_distance / self.max_distance_total) * 100
 
         print(f"엘보 각도 DTW 거리: {self.distance_elbow}")
@@ -41,21 +44,21 @@ class DTW():
         print(f"총합 유사도: {self.similarity_percentage_total:.2f}%")
 
         # 팔꿈치와 무릎 각도의 차이 계산
-        self.elbow_diff = [int((a*180 - b*180)) for a, b in zip(self.line1_elbow, self.line2_elbow)]
-        self.knee_diff = [int((a*180 - b*180)) for a, b in zip(self.line1_knee, self.line2_knee)]
+        self.elbow_diff = [int((a - b) * 180) for a, b in zip(self.line1_elbow, self.line2_elbow)]
+        self.knee_diff = [int((a - b) * 180) for a, b in zip(self.line1_knee, self.line2_knee)]
 
         self.data_list.append({
-            'similarity_percentage_total': round(self.similarity_percentage_total-13)
+            'similarity_percentage_total': round(self.similarity_percentage_total)
         })
 
         self.diff_list.append({
             'elbow_diff': self.elbow_diff,
             'knee_diff': self.knee_diff
         })
-        
+
         df = pd.DataFrame(self.data_list)
         df.to_json(f'user/dtw/result/{user}_{player}.json', orient='records', indent=4)
-        
+
         diff_df = pd.DataFrame(self.diff_list)
         diff_df.to_json(f'user/dtw/diff/{user}_{player}_diff.json', orient='records', indent=4)
 

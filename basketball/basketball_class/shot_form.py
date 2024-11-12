@@ -177,7 +177,10 @@ class ShotForm():
                 # 'q' 키를 누르면 종료
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
-                
+    
+    def normalize_angle(self,angle, min_angle=30, max_angle=180):
+        return (angle - min_angle) / (max_angle - min_angle)
+    
     def recordToCSV(self, id):
         results=self.model.predictor.trackers[0].reset()
         
@@ -210,10 +213,10 @@ class ShotForm():
                             
                         self.frame_number=self.cap.get(cv2.CAP_PROP_POS_FRAMES)
                             
-                        left_elbow_angle=self.leftElbowAngleleft_elbow_angle=(self.leftElbowAngle(keypoint))/180
-                        right_elbow_angle=(self.rightElbowAngle(keypoint))/180
-                        left_knee_angle=(self.leftKneeAngle(keypoint))/180
-                        right_knee_angle=(self.rightKneeAngle(keypoint))/180  
+                        left_elbow_angle = self.normalize_angle(self.leftElbowAngle(keypoint))
+                        right_elbow_angle = self.normalize_angle(self.rightElbowAngle(keypoint))
+                        left_knee_angle = self.normalize_angle(self.leftKneeAngle(keypoint))
+                        right_knee_angle = self.normalize_angle(self.rightKneeAngle(keypoint)) 
                         
                         left_ankle_x = keypoint[0][15][0]   # 왼쪽 발목 x 좌표
                         right_ankle_x = keypoint[0][16][0]  # 오른쪽 발목

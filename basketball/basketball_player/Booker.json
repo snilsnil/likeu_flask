@@ -1,290 +1,290 @@
 [
     {
         "Frame":1.0,
-        "Elbow Angle":0.4005046103,
-        "Knee Angle":0.7840710548,
+        "Elbow Angle":0.2805981558,
+        "Knee Angle":0.7408834443,
         "Shooting":false
     },
     {
         "Frame":2.0,
-        "Elbow Angle":0.4016567115,
-        "Knee Angle":0.7678166465,
+        "Elbow Angle":0.2818659755,
+        "Knee Angle":0.7213427285,
         "Shooting":false
     },
     {
         "Frame":3.0,
-        "Elbow Angle":0.3673080696,
-        "Knee Angle":0.7610989278,
+        "Elbow Angle":0.2406944603,
+        "Knee Angle":0.7133239953,
         "Shooting":false
     },
     {
         "Frame":4.0,
-        "Elbow Angle":0.3551973473,
-        "Knee Angle":0.7439638804,
+        "Elbow Angle":0.2261371416,
+        "Knee Angle":0.6927885307,
         "Shooting":false
     },
     {
         "Frame":5.0,
-        "Elbow Angle":0.3243158992,
-        "Knee Angle":0.7327989496,
+        "Elbow Angle":0.189030272,
+        "Knee Angle":0.67939881,
         "Shooting":true
     },
     {
         "Frame":6.0,
-        "Elbow Angle":0.2972573079,
-        "Knee Angle":0.7357091414,
+        "Elbow Angle":0.1565335296,
+        "Knee Angle":0.6827994246,
         "Shooting":true
     },
     {
         "Frame":7.0,
-        "Elbow Angle":0.3099169497,
-        "Knee Angle":0.729072702,
+        "Elbow Angle":0.1718613165,
+        "Knee Angle":0.6748846924,
         "Shooting":true
     },
     {
         "Frame":8.0,
-        "Elbow Angle":0.3116841853,
-        "Knee Angle":0.7130231235,
+        "Elbow Angle":0.1738851927,
+        "Knee Angle":0.655644687,
         "Shooting":true
     },
     {
         "Frame":9.0,
-        "Elbow Angle":0.3328641086,
-        "Knee Angle":0.7199676045,
+        "Elbow Angle":0.1993765059,
+        "Knee Angle":0.6640150383,
         "Shooting":true
     },
     {
         "Frame":10.0,
-        "Elbow Angle":0.3440747258,
-        "Knee Angle":0.7303991247,
+        "Elbow Angle":0.2129117097,
+        "Knee Angle":0.6766108178,
         "Shooting":true
     },
     {
         "Frame":11.0,
-        "Elbow Angle":0.3807739773,
-        "Knee Angle":0.7328734746,
+        "Elbow Angle":0.2570293586,
+        "Knee Angle":0.6795825876,
         "Shooting":true
     },
     {
         "Frame":12.0,
-        "Elbow Angle":0.341646973,
-        "Knee Angle":0.6971289697,
+        "Elbow Angle":0.2099254144,
+        "Knee Angle":0.6367137704,
         "Shooting":true
     },
     {
         "Frame":13.0,
-        "Elbow Angle":0.3215184055,
-        "Knee Angle":0.7142064158,
+        "Elbow Angle":0.1859810479,
+        "Knee Angle":0.6573351133,
         "Shooting":true
     },
     {
         "Frame":14.0,
-        "Elbow Angle":0.3325523484,
-        "Knee Angle":0.7220785883,
+        "Elbow Angle":0.199130528,
+        "Knee Angle":0.6665804574,
         "Shooting":true
     },
     {
         "Frame":15.0,
-        "Elbow Angle":0.3771904629,
-        "Knee Angle":0.7342741187,
+        "Elbow Angle":0.252548961,
+        "Knee Angle":0.6811846768,
         "Shooting":true
     },
     {
         "Frame":16.0,
-        "Elbow Angle":0.4537294109,
-        "Knee Angle":0.7410587733,
+        "Elbow Angle":0.3445878546,
+        "Knee Angle":0.6894550341,
         "Shooting":true
     },
     {
         "Frame":17.0,
-        "Elbow Angle":0.4884530302,
-        "Knee Angle":0.8028580972,
+        "Elbow Angle":0.3856806405,
+        "Knee Angle":0.7635427335,
         "Shooting":true
     },
     {
         "Frame":18.0,
-        "Elbow Angle":0.5161577953,
-        "Knee Angle":0.8264702888,
+        "Elbow Angle":0.4193525624,
+        "Knee Angle":0.7920064085,
         "Shooting":true
     },
     {
         "Frame":19.0,
-        "Elbow Angle":0.5448039122,
-        "Knee Angle":0.8210014323,
+        "Elbow Angle":0.4536679792,
+        "Knee Angle":0.7854357665,
         "Shooting":true
     },
     {
         "Frame":20.0,
-        "Elbow Angle":0.5039921659,
-        "Knee Angle":0.8693401988,
+        "Elbow Angle":0.404797156,
+        "Knee Angle":0.8433592313,
         "Shooting":true
     },
     {
         "Frame":21.0,
-        "Elbow Angle":0.7041367438,
-        "Knee Angle":0.8714909495,
+        "Elbow Angle":0.6447879647,
+        "Knee Angle":0.8458528879,
         "Shooting":true
     },
     {
         "Frame":22.0,
-        "Elbow Angle":0.7767838501,
-        "Knee Angle":0.877414469,
+        "Elbow Angle":0.7320888928,
+        "Knee Angle":0.8530025477,
         "Shooting":true
     },
     {
         "Frame":23.0,
-        "Elbow Angle":0.821005075,
-        "Knee Angle":0.8652171172,
+        "Elbow Angle":0.7852186576,
+        "Knee Angle":0.8383594418,
         "Shooting":true
     },
     {
         "Frame":24.0,
-        "Elbow Angle":0.8735141274,
-        "Knee Angle":0.8541705005,
+        "Elbow Angle":0.8480536659,
+        "Knee Angle":0.8250399354,
         "Shooting":false
     },
     {
         "Frame":25.0,
-        "Elbow Angle":0.8134424619,
-        "Knee Angle":0.8786636347,
+        "Elbow Angle":0.7761787656,
+        "Knee Angle":0.8545366993,
         "Shooting":false
     },
     {
         "Frame":26.0,
-        "Elbow Angle":0.8294687419,
-        "Knee Angle":0.8867986177,
+        "Elbow Angle":0.7955958095,
+        "Knee Angle":0.8642455855,
         "Shooting":false
     },
     {
         "Frame":27.0,
-        "Elbow Angle":0.8222217594,
-        "Knee Angle":0.8806792236,
+        "Elbow Angle":0.7866424333,
+        "Knee Angle":0.8568232645,
         "Shooting":false
     },
     {
         "Frame":28.0,
-        "Elbow Angle":0.8235738333,
-        "Knee Angle":0.8780222041,
+        "Elbow Angle":0.7882891464,
+        "Knee Angle":0.8537158016,
         "Shooting":false
     },
     {
         "Frame":29.0,
-        "Elbow Angle":0.8421602958,
-        "Knee Angle":0.8769610962,
+        "Elbow Angle":0.8106626604,
+        "Knee Angle":0.8523445729,
         "Shooting":false
     },
     {
         "Frame":30.0,
-        "Elbow Angle":0.8494557727,
-        "Knee Angle":0.8857594424,
+        "Elbow Angle":0.8192943803,
+        "Knee Angle":0.862931275,
         "Shooting":false
     },
     {
         "Frame":31.0,
-        "Elbow Angle":0.8538377185,
-        "Knee Angle":0.8836470166,
+        "Elbow Angle":0.8244652888,
+        "Knee Angle":0.8604946278,
         "Shooting":false
     },
     {
         "Frame":32.0,
-        "Elbow Angle":0.8558605928,
-        "Knee Angle":0.8789453421,
+        "Elbow Angle":0.827032165,
+        "Knee Angle":0.8547895984,
         "Shooting":false
     },
     {
         "Frame":33.0,
-        "Elbow Angle":0.876093131,
-        "Knee Angle":0.8878890195,
+        "Elbow Angle":0.8513031056,
+        "Knee Angle":0.8654700108,
         "Shooting":false
     },
     {
         "Frame":34.0,
-        "Elbow Angle":0.8697410551,
-        "Knee Angle":0.8893965181,
+        "Elbow Angle":0.8434656001,
+        "Knee Angle":0.8673550519,
         "Shooting":false
     },
     {
         "Frame":35.0,
-        "Elbow Angle":0.8624754034,
-        "Knee Angle":0.8848620314,
+        "Elbow Angle":0.8349302315,
+        "Knee Angle":0.8619091144,
         "Shooting":false
     },
     {
         "Frame":36.0,
-        "Elbow Angle":0.8318599911,
-        "Knee Angle":0.8902698716,
+        "Elbow Angle":0.7980202535,
+        "Knee Angle":0.8684270273,
         "Shooting":false
     },
     {
         "Frame":37.0,
-        "Elbow Angle":0.8561785761,
-        "Knee Angle":0.8920229535,
+        "Elbow Angle":0.8274601902,
+        "Knee Angle":0.8703923004,
         "Shooting":false
     },
     {
         "Frame":38.0,
-        "Elbow Angle":0.8248360522,
-        "Knee Angle":0.8914412491,
+        "Elbow Angle":0.7895991766,
+        "Knee Angle":0.8697916991,
         "Shooting":false
     },
     {
         "Frame":39.0,
-        "Elbow Angle":0.820427924,
-        "Knee Angle":0.8906159345,
+        "Elbow Angle":0.7841995023,
+        "Knee Angle":0.8689090566,
         "Shooting":false
     },
     {
         "Frame":40.0,
-        "Elbow Angle":0.8636190806,
-        "Knee Angle":0.8871627427,
+        "Elbow Angle":0.8363104761,
+        "Knee Angle":0.8647060314,
         "Shooting":false
     },
     {
         "Frame":41.0,
-        "Elbow Angle":0.8664948179,
-        "Knee Angle":0.8813147347,
+        "Elbow Angle":0.839687868,
+        "Knee Angle":0.8575793209,
         "Shooting":false
     },
     {
         "Frame":42.0,
-        "Elbow Angle":0.8658149105,
-        "Knee Angle":0.8870000324,
+        "Elbow Angle":0.8389906423,
+        "Knee Angle":0.8644259025,
         "Shooting":false
     },
     {
         "Frame":43.0,
-        "Elbow Angle":0.8680332042,
-        "Knee Angle":0.8924802726,
+        "Elbow Angle":0.8415431296,
+        "Knee Angle":0.871018219,
         "Shooting":false
     },
     {
         "Frame":44.0,
-        "Elbow Angle":0.8677665991,
-        "Knee Angle":0.8912604767,
+        "Elbow Angle":0.8414524246,
+        "Knee Angle":0.8695902541,
         "Shooting":false
     },
     {
         "Frame":45.0,
-        "Elbow Angle":0.8595539038,
-        "Knee Angle":0.8925418961,
+        "Elbow Angle":0.8313237095,
+        "Knee Angle":0.8712544525,
         "Shooting":false
     },
     {
         "Frame":46.0,
-        "Elbow Angle":0.8622948587,
-        "Knee Angle":0.8903022012,
+        "Elbow Angle":0.8348640242,
+        "Knee Angle":0.8683653735,
         "Shooting":false
     },
     {
         "Frame":47.0,
-        "Elbow Angle":0.855409345,
-        "Knee Angle":0.8874576551,
+        "Elbow Angle":0.8265538696,
+        "Knee Angle":0.8649437219,
         "Shooting":false
     },
     {
         "Frame":48.0,
-        "Elbow Angle":0.8578222232,
-        "Knee Angle":0.8849147756,
+        "Elbow Angle":0.8294566089,
+        "Knee Angle":0.8618630334,
         "Shooting":false
     }
 ]
